@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSS 등급 산출기</title>
+    <link rel="stylesheet" href="../main.css">
+</head>
+
+<body>
+    <style>
+        body {
+            background-color:powderblue
+        }
+    </style>
+    <br>
+    <div style="margin-left: 30px">
+        <div style="display: inline-block">
+            <p>&nbsp;&nbsp;&nbsp;사업자 번호</p>
+            <textarea cols="20" rows="10" id="biz-nos"></textarea>
+        </div>
+        <div style="display: inline-block">
+            <p>&nbsp;&nbsp;&nbsp;CSS 등급</p>
+            <textarea cols="20" rows="10" id="grades"></textarea>
+        </div>
+        <br><br>
+        <button type="button" id="get-grade">Run</button>
+        <button type="button" id="exit">Exit</button>
+        <img style="margin-right:80px; height: 20%; width: 20%;" src="../assets/images/90days_logo.png" align="right">
+        <br><br>
+        <span id="status-bar">Version 0.31</span>
+    </div>
+
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        let pending = false;
+        document.getElementById('get-grade').addEventListener('click', function (e) {
+            const bizNos = document.getElementById('biz-nos').value;
+            if (!pending) {
+                ipcRenderer.send('bizNos', bizNos);
+                pending = true;
+            } else {
+                ipcRenderer.send('bizNos', null);
+            }
+        });
+        document.getElementById('exit').addEventListener('click', function (e) {
+            ipcRenderer.send('exitWindows', null);
+        });
+        ipcRenderer.on('statusMessage', function (e, result) {
+            document.getElementById('status-bar').textContent = result;
+            document.getElementById('status-bar').style.backgroundColor = 'aqua';
+        });
+        ipcRenderer.on('setPending', function (e, value) {
+            pending = value;
+        });
+        ipcRenderer.on('appendGrade', function (e, grade) {
+            document.getElementById('grades').value += grade + '\n';
+        });
+        ipcRenderer.on('resetGrade', function (e, grade) {
+            document.getElementById('grades').value = '';
+        });
+        ipcRenderer.on('readData', function (e, dummy) {
+            let bizNos = document.getElementById('biz-nos').value;
+            let grades = document.getElementById('grades').value;
+
+            bizNos = bizNos.split('\n');
+            grades = grades.split('\n');
+            let maxLength = Math.max(bizNos.length, grades.length);
+
+            let data = [];
+            for (let i = 0; i < maxLength; i++) {
+                let bizNo = bizNos[i] || '';
+                let grade = grades[i] || '';
+                let item = [bizNo, grade];
+                data.push(item);
+            }
+            let header = ['사업자번호', 'CSS 등급'];
+            data.unshift(header);
+
+            ipcRenderer.send('catchData', data);
+        });
+    </script>
+</body>
+
+</html>

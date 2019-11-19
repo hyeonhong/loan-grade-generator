@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>예약 테이블</title>
+
+<body>
+    <img id="table">
+    <style>
+        img {
+            width: 850px;
+            height: 1420px;
+            object-fit: none;
+            object-position: right bottom;
+        }
+    </style>
+
+    <script>
+        const { remote } = require('electron');
+        let currentWindow = remote.getCurrentWindow();
+        document.getElementById('table').src = currentWindow.imagePath;
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>About</title>
+</head>
+
+<body>
+    <style>
+        body {
+                background-color: powderblue
+            }
+    </style>
+    <p>
+        문의사항: 31@kross.kr
+        <br><br>
+        <small>Copyright © 2018 한국어음중개. All rights reserved</small>
+    </p>
+    <input id="closeAboutWindow" type="button" value="창 닫기">
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const closeAboutWindow = document.getElementById('closeAboutWindow');
+        closeAboutWindow.addEventListener('click', () => {
+            ipcRenderer.send('closeAboutWindow');
+        });
+    </script>
+</body>
+
+</html>
